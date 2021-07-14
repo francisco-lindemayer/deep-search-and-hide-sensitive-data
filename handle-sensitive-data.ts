@@ -6,8 +6,6 @@ const KEYS_TO_SEARCH = [
   'access_token',
   'refresh_token',
   'password',
-  'senha',
-  'senhaGerente',
 ];
 
 const deepSearchAndHideSensitiveData = ({
@@ -18,7 +16,6 @@ const deepSearchAndHideSensitiveData = ({
   currentDepth?: number;
 }): ParsedQs => {
   const MAX_DEPTH = 4;
-  console.log('profundidade', currentDepth, properties);
   if (properties) {
     const propertiesWithoutSensitiveData = Object.keys(properties).reduce(
       (accumulator, property) => {
