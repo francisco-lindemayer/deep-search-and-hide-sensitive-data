@@ -1,0 +1,40 @@
+{
+  "name": "lindemayer.francisco.deep-search-sensitive-data",
+  "version": "1.0.0",
+  "description": "An experimental algorithm for recursive search and replace sensitive data. Just to practice.",
+  "main": "index.ts",
+  "scripts": {
+    "start": "npx ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/francisco-lindemayer/deep-search-and-hide-sensitive-data.git"
+  },
+  "keywords": [
+    "recursive",
+    "algorithm",
+    "search",
+    "recursive-search"
+  ],
+  "author": "Francisco Lindemayer Padilha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/francisco-lindemayer/deep-search-and-hide-sensitive-data/issues"
+  },
+  "homepage": "https://github.com/francisco-lindemayer/deep-search-and-hide-sensitive-data#readme",
+  "dependencies": {
+    "@types/qs": "^6.9.7",
+    "qs": "^6.10.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "eslint": "^7.30.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "ts-node": "^10.1.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.3.5"
+  }
+}
