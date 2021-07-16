@@ -1,4 +1,12 @@
-import { searchAndHideSensitiveData } from "./handle-sensitive-data";
+import {
+  searchAndHideSensitiveData,
+  SensitiveDataType,
+} from "./handle-sensitive-data";
 import { getSensitiveDataMock } from "./sensitive-data.mock";
 
-console.log(JSON.stringify(searchAndHideSensitiveData(getSensitiveDataMock())));
+const printObfuscatedData = (sensitiveData: SensitiveDataType): void => {
+  console.log(searchAndHideSensitiveData(sensitiveData));
+};
+
+printObfuscatedData(getSensitiveDataMock().json);
+printObfuscatedData(getSensitiveDataMock().query_string);

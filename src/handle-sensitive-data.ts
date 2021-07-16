@@ -1,39 +1,58 @@
 import qs, { ParsedQs } from "qs";
 
+export type SensitiveDataType = ParsedQs | string;
+
 const KEYS_TO_SEARCH = [
-  "client_id",
-  "client_secret",
-  "access_token",
-  "refresh_token",
   "password",
+  "sensitive_data",
+  "other_sensitive_data",
+  "other_sensitive_information",
+  "street",
 ];
+
+const FIRST_LEVEL_OF_DEPTH = 1;
+const MAX_DEPTH = 10;
+
+const tryParseQuerystring = (properties: SensitiveDataType): ParsedQs =>
+  typeof properties === "string"
+    ? qs.parse(properties, { ignoreQueryPrefix: true })
+    : properties;
+
+const isItDepthLimit = (currentDepth: number): boolean => {
+  return !(currentDepth <= MAX_DEPTH);
+};
+
+const isSensitiveData = (propertyKey: string): boolean =>
+  KEYS_TO_SEARCH.includes(propertyKey);
+
+const isAnObject = (properties: ParsedQs, propertyKey: string): boolean =>
+  typeof properties[propertyKey] === "object";
 
 const deepSearchAndHideSensitiveData = ({
   properties,
-  currentDepth = 1,
+  currentDepth = FIRST_LEVEL_OF_DEPTH,
 }: {
   properties: ParsedQs;
   currentDepth?: number;
 }): ParsedQs => {
-  const MAX_DEPTH = 10;
   const propertiesWithoutSensitiveData = Object.keys(properties).reduce(
-    (accumulator, property) => {
-      if (KEYS_TO_SEARCH.includes(property)) {
-        accumulator[property] = "**********";
-      } else if (currentDepth < MAX_DEPTH) {
-        switch (typeof properties[property]) {
-          case "object":
-            accumulator[property] = deepSearchAndHideSensitiveData({
-              properties: properties[property] as ParsedQs,
-              currentDepth: currentDepth + 1,
-            });
-            break;
-          default:
-            accumulator[property] = properties[property];
-            break;
-        }
-      } else {
-        accumulator[property] = properties[property];
+    (accumulator, propertyKey) => {
+      switch (true) {
+        case isSensitiveData(propertyKey):
+          accumulator[propertyKey] = "**********";
+          break;
+        case isItDepthLimit(currentDepth):
+          accumulator[propertyKey] = properties[propertyKey];
+          break;
+        case isAnObject(properties, propertyKey):
+          accumulator[propertyKey] = deepSearchAndHideSensitiveData({
+            properties: properties[propertyKey] as ParsedQs,
+            currentDepth: currentDepth + 1,
+          });
+          break;
+        default:
+          accumulator[propertyKey] = properties[propertyKey];
+          break;
       }
       return accumulator;
     },
@@ -43,19 +62,15 @@ const deepSearchAndHideSensitiveData = ({
 };
 
 export const searchAndHideSensitiveData = (
-  properties: ParsedQs | string
-): ParsedQs | undefined => {
-  console.log(properties);
-
-  const objectProperties: ParsedQs =
-    typeof properties === "string"
-      ? qs.parse(properties, { ignoreQueryPrefix: true })
-      : properties;
-  if (objectProperties) {
+  properties: SensitiveDataType
+): string => {
+  try {
     const propertiesWithoutSensitiveData = deepSearchAndHideSensitiveData({
-      properties: objectProperties,
+      properties: tryParseQuerystring(properties),
     });
 
-    return propertiesWithoutSensitiveData;
+    return JSON.stringify(propertiesWithoutSensitiveData);
+  } catch (error) {
+    return "Sorry, but I couldn't convert the data.";
   }
 };
